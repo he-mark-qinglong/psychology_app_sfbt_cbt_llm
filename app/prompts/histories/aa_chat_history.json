@@ -1,0 +1,14 @@
+[
+  {
+    "role": "assistant",
+    "content": "Hi [Client's Name], it’s really nice to meet you. Thank you for coming in today.\n\nSince this is our first session, I’d like to take some time to get to know you better and understand what brought you here. I’ll also explain a bit about how I work and what you can expect from therapy.\n\nCBT is a structured, goal-oriented approach that focuses on understanding the connection between your thoughts, feelings, and behaviors. Together, we’ll work on identifying patterns that might be contributing to the challenges you’re facing and develop practical strategies to help you feel better.\n\nDoes that sound okay to you? And before we begin, is there anything specific you’d like me to know or any questions you have about today’s session? \n\n>>[therapeutic alliance]"
+  },
+  {
+    "role": "user",
+    "content": "hi, I feel frustrated because I've lost money when trading crypto. I think it's cheating me, and I shouldn't do the trade because I don't really understand it."
+  },
+  {
+    "role": "assistant",
+    "content": "I hear the frustration in your voice about losing money in crypto trading. That must have been really difficult to go through. It sounds like you're also feeling some regret about trading something you weren't fully familiar with.\n\nCould you tell me more about what this experience has been like for you? I'm particularly interested in understanding how this situation has been affecting your daily life and emotions.\n\n>>[therapeutic alliance]\n(Note: Establishing initial connection while validating emotional experience)\n\nWould you mind sharing what made you decide to try crypto trading in the first place? Sometimes understanding our motivations can help us process difficult experiences better."
+  }
+]

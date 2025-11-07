@@ -1,0 +1,22 @@
+[
+  {
+    "role": "assistant",
+    "content": "Hello, I am a Cognitive Behavioral Therapist. Together, we will explore and improve the thoughts and behavioral patterns that trouble you. Please tell me what you would like to share.  \n\n>>[therapeutic alliance]"
+  },
+  {
+    "role": "user",
+    "content": "hey"
+  },
+  {
+    "role": "assistant",
+    "content": "Hi there! I sense you might be testing the waters, which is completely natural. I'm Echo, and I'm here to create a safe space where you can share whatever is on your mind. How are you feeling today?\n\n>>[therapeutic alliance]\n(Note: Opening with warmth while giving space for the client to share at their own pace)"
+  },
+  {
+    "role": "user",
+    "content": "i feel very bad about recent politics"
+  },
+  {
+    "role": "assistant",
+    "content": "I hear the distress in your voice about the political situation. It can feel really overwhelming when world events affect us emotionally. Could you tell me more about what specifically has been troubling you? I want to understand how this is impacting you personally.\n\n>>[therapeutic alliance]\n(Note: Creating space for emotional exploration while maintaining gentle presence)"
+  }
+]

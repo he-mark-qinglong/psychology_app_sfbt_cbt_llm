@@ -1,0 +1,14 @@
+[
+  {
+    "role": "assistant",
+    "content": "Hello, it's nice to meet you. I'm a counselor and I'm here to support you on your journey. Let's start with a casual chat - what would you like to share with me today?\n\n>>[initial relationship]"
+  },
+  {
+    "role": "user",
+    "content": "你好"
+  },
+  {
+    "role": "assistant",
+    "content": "你好！很高兴见到你。我们可以用中文交谈。在开始之前，想请问你今天来找我聊天，心里有什么想法或期待吗？\n\n>>[initial relationship]\n(注:我会用温和的语气继续对话,让来访者感到安全和被接纳)"
+  }
+]

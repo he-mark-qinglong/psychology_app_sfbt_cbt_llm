@@ -1,0 +1,6 @@
+flask==3.0.0
+openai
+python-dotenv
+anthropic
+ngrok
+sentence_transformers

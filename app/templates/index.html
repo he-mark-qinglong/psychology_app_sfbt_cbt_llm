@@ -1,0 +1,33 @@
+<!-- 在index.html中添加 -->  
+<div id="userInput" class="user-input-container">  
+    <h2>please enter your name</h2>  
+    <input type="text" id="username" placeholder="enter username">  
+    <button onclick="handleUserInit()">start chat</button>  
+</div>  
+
+<script>  
+async function handleUserInit() {  
+    const username = document.getElementById('username').value.trim();  
+    if (!username) {  
+        alert('please enter username');  
+        return;  
+    }  
+    
+    if (await initializeUser(username)) {  
+        document.getElementById('userInput').style.display = 'none';  
+        // 显示主要对话界面  
+        document.getElementById('mainContent').style.display = 'block';  
+    } else {  
+        alert('initialization failed, please try again');  
+    }  
+}  
+
+// 页面加载时检查是否已有用户  
+window.onload = function() {  
+    const username = localStorage.getItem('currentUser');  
+    if (username) {  
+        document.getElementById('userInput').style.display = 'none';  
+        document.getElementById('mainContent').style.display = 'block';  
+    }  
+}  
+</script>

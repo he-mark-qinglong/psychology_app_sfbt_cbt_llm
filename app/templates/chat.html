@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {% extends "base.html" %}  
+    {% block title %}EchoAI - mental health therapy{% endblock %}  
+    {% block styles %}  
+    <link rel="stylesheet" href="/static/css/style.css">  
+    <style>
+        /* 保持原有样式不变 */
+        .loading-dots::after {  
+            content: '...';  
+            animation: dots 1.5s steps(4, end) infinite;  
+        }  
+        @keyframes dots {  
+            0%, 20% { content: '.'; }  
+            40% { content: '..'; }  
+            60% { content: '...'; }  
+            80%, 100% { content: ''; }  
+        }  
+        
+        .chat-container {
+            height: calc(100vh - 2rem);
+            overflow: hidden;
+            margin: 0 auto;
+            max-width: 1200px;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            width: 250px;
+            background: white;
+            transition: all 0.3s ease;
+            z-index: 50;
+            padding: 0.5rem;
+        }
+
+        .sidebar-left {
+            left: -250px;
+        }
+        .sidebar-left.open {
+            left: 0;
+        }
+
+        .sidebar-right {
+            right: -250px;
+        }
+        .sidebar-right.open {
+            right: 0;
+        }
+
+        .sidebar-toggle {
+            position: fixed;
+            top: 20%;
+            transform: translateY(-20%);
+            background: white;
+            padding: 1rem 0.5rem;
+            cursor: pointer;
+            z-index: 49;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-toggle:hover {
+            background: #f3f4f6;
+        }
+
+        .sidebar-toggle-left {
+            left: 0;
+            border-radius: 0 0.5rem 0.5rem 0;
+        }
+
+        .sidebar-toggle-right {
+            /* display: none; */
+            right: 0;
+            border-radius: 0.5rem 0 0 0.5rem;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            z-index: 48;
+        }
+
+        .overlay.show {
+            display: block;
+        }
+
+        /* 新增输入区域相关样式 */
+        .input-container {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .voice-assistant-btn {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .voice-assistant-btn:hover {
+            background: #f3f4f6;
+        }
+
+        @media (max-width: 768px) {
+            .chat-container {
+                margin: 0;
+            }
+        }
+    </style>  
+    {% endblock %}  
+</head>
+<body>
+    {% block content %} 
+    <!-- 左侧切换按钮 -->  
+    <div class="sidebar-toggle sidebar-toggle-left" id="sidebar-toggle-left">  
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">  
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />  
+        </svg>  
+    </div>  
+
+    <!-- 右侧切换按钮 -->  
+    <div class="sidebar-toggle sidebar-toggle-right" id="sidebar-toggle-right">  
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">  
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />  
+        </svg>  
+    </div>  
+
+    <!-- 遮罩层 -->  
+    <div class="overlay" id="overlay"></div>  
+
+    <!-- 左侧边栏 -->  
+    <div class="sidebar sidebar-left shadow-lg" id="sidebar-left">  
+        <div class="flex justify-between items-center mb-4">  
+            <h2 class="text-lg font-bold">stage list</h2>  
+            <button class="text-gray-500 hover:text-gray-700" onclick="toggleSidebar('left')">  
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">  
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />  
+                </svg>  
+            </button>  
+        </div>  
+        <div id="states-list" class="space-y-2">  
+            <!-- 阶段列表内容 -->  
+        </div>  
+    </div>  
+
+    <!-- 右侧边栏 -->  
+    <div class="sidebar sidebar-right shadow-lg" id="sidebar-right">  
+        <div class="flex justify-between items-center mb-4">  
+            <h2 class="text-lg font-bold">stage guide</h2>  
+            <button class="text-gray-500 hover:text-gray-700" onclick="toggleSidebar('right')">  
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">  
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />  
+                </svg>  
+            </button>  
+        </div>  
+        <textarea id="stage-guide-content"   
+                class="w-full h-[calc(100%-8rem)] border rounded-lg p-2 mb-4 resize-none"  
+                placeholder="stage guide content..."></textarea>  
+        <button id="save-guide-btn"   
+                class="w-full bg-green-500 text-white py-2 rounded-lg hover:bg-green-600">  
+            save changes  
+        </button>  
+    </div>
+
+    <!-- 主聊天区域 -->
+    <div class="chat-container bg-white rounded-lg shadow">
+        <div class="p-4 border-b flex justify-between items-center">  
+            <h2 class="text-lg font-bold">current stage: <span id="current-stage-display">not set</span></h2>  
+            <div class="flex items-center gap-4">  
+                <!-- 添加用户名显示 -->  
+                <div class="flex items-center gap-2">  
+                    <span class="text-gray-600">current user:</span>  
+                    <span id="current-username" class="font-medium text-blue-600">unlogged user</span>  
+                </div>  
+                <button id="change-user-btn"   
+                        class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg flex items-center gap-2">  
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none"   
+                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">  
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>  
+                        <circle cx="12" cy="7" r="4"></circle>  
+                    </svg>  
+                    switch user  
+                </button>  
+                <span id="voice-status" class="text-sm text-gray-500 hidden">voice assistant is on</span>  
+            </div>   
+        </div>  
+
+        <div id="chat-messages" class="flex-1 p-4 space-y-4 overflow-y-auto" style="height: calc(100% - 140px);">
+            <!-- 消息内容 -->
+        </div>
+
+        <!-- 修改后的输入区域 -->
+        <div class="input-container">
+            <button id="voice-toggle" 
+                    class="voice-assistant-btn"
+                    title="switch voice assistant">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"   
+                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">  
+                    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>  
+                    <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>  
+                    <line x1="12" y1="19" x2="12" y2="23"></line>  
+                    <line x1="8" y1="23" x2="16" y2="23"></line>  
+                </svg>
+            </button>
+            <input type="text" id="message-input"
+                   class="flex-1 border rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500"
+                   placeholder="enter message...">
+            <button id="send-button"
+                    class="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600">
+                send
+            </button>
+        </div>
+    </div>
+    {% endblock %}
+
+    {% block scripts %}
+    {{ super() }}
+    <!-- 保持原有的脚本引用和代码不变 -->
+    <script src="static/js/api.js"></script>
+    <script src="static/js/ui.js"></script>
+    <script src="static/js/chat.js"></script>
+    <script src="static/js/voiceAssistant.js"></script>
+    <script>
+        // 保持原有的侧边栏控制代码不变
+        function toggleSidebar(side) {
+            const sidebar = document.getElementById(`sidebar-${side}`);
+            const overlay = document.getElementById('overlay');
+            const isOpen = sidebar.classList.contains('open');
+
+            document.querySelectorAll('.sidebar').forEach(sb => {
+                sb.classList.remove('open');
+            });
+            overlay.classList.remove('show');
+
+            if (!isOpen) {
+                sidebar.classList.add('open');
+                overlay.classList.add('show');
+            }
+        }
+
+        document.getElementById('sidebar-toggle-left').addEventListener('click', () => toggleSidebar('left'));
+        document.getElementById('sidebar-toggle-right').addEventListener('click', () => toggleSidebar('right'));
+        
+        document.getElementById('overlay').addEventListener('click', () => {
+            document.querySelectorAll('.sidebar').forEach(sidebar => {
+                sidebar.classList.remove('open');
+            });
+            document.getElementById('overlay').classList.remove('show');
+        });
+
+        function saveSidebarState(side, isOpen) {
+            localStorage.setItem(`sidebar-${side}-state`, isOpen);
+        }
+
+        function restoreSidebarStates() {
+            ['left', 'right'].forEach(side => {
+                const isOpen = localStorage.getItem(`sidebar-${side}-state`) === 'true';
+                if (isOpen) {
+                    toggleSidebar(side);
+                }
+            });
+        }
+    </script>
+    
+    {% endblock %}
+</body>
+</html>
